@@ -1,0 +1,6 @@
+../MEMS/App/app_mems.c:52:6:MX_MEMS_Init	8	static
+../MEMS/App/app_mems.c:74:6:MX_MEMS_Process	8	static
+../MEMS/App/app_mems.c:91:6:MX_LSM6DSO_6DOrientation_Init	8	static
+../MEMS/App/app_mems.c:118:6:BSP_PB_Callback	16	static
+../MEMS/App/app_mems.c:127:6:MX_LSM6DSO_6DOrientation_Process	16	static
+../MEMS/App/app_mems.c:176:13:Send_Orientation	16	static

@@ -1,0 +1,2 @@
+../MEMS/Target/app_mems_int_pin_a_interface.c:27:6:set_mems_int_pin_a_exti	8	static
+../MEMS/Target/app_mems_int_pin_a_interface.c:36:13:mems_int_pin_a_hardware_event_isr	4	static
