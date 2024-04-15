@@ -29,8 +29,8 @@ extern "C" {
 #include "stm32g4xx_hal_exti.h"
 
 /* Exported variables --------------------------------------------------------*/
-extern EXTI_HandleTypeDef hexti1;
-#define H_EXTI_1 hexti1
+extern EXTI_HandleTypeDef hexti0;
+#define H_EXTI_0 hexti0
 
 /* Exported Functions --------------------------------------------------------*/
 void set_mems_int_pin_a_exti(void);

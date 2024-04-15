@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "app_mems_int_pin_a_interface.h"
 
-EXTI_HandleTypeDef hexti1 = {.Line = EXTI_LINE_1};
+EXTI_HandleTypeDef hexti0 = {.Line = EXTI_LINE_0};
 extern volatile uint8_t MemsEventDetected;
 
 static void mems_int_pin_a_hardware_event_isr(void);
@@ -27,10 +27,10 @@ static void mems_int_pin_a_hardware_event_isr(void);
 void set_mems_int_pin_a_exti(void)
 {
   /* register event irq handler */
-  HAL_EXTI_GetHandle(&hexti1, EXTI_LINE_1);
-  HAL_EXTI_RegisterCallback(&hexti1, HAL_EXTI_COMMON_CB_ID, mems_int_pin_a_hardware_event_isr);
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+  HAL_EXTI_GetHandle(&hexti0, EXTI_LINE_0);
+  HAL_EXTI_RegisterCallback(&hexti0, HAL_EXTI_COMMON_CB_ID, mems_int_pin_a_hardware_event_isr);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
 static void mems_int_pin_a_hardware_event_isr(void)

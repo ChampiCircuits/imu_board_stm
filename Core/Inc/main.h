@@ -59,11 +59,11 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define IMU_SC_Pin GPIO_PIN_0
-#define IMU_SC_GPIO_Port GPIOA
-#define IMU_INT_Pin GPIO_PIN_1
+#define IMU_INT_Pin GPIO_PIN_0
 #define IMU_INT_GPIO_Port GPIOA
-#define IMU_INT_EXTI_IRQn EXTI1_IRQn
+#define IMU_INT_EXTI_IRQn EXTI0_IRQn
+#define IMU_CS_Pin GPIO_PIN_1
+#define IMU_CS_GPIO_Port GPIOA
 #define USART2_TX_Pin GPIO_PIN_2
 #define USART2_TX_GPIO_Port GPIOA
 #define USART2_RX_Pin GPIO_PIN_3

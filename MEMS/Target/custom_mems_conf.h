@@ -41,7 +41,7 @@ extern "C" {
 #define CUSTOM_LSM6DSO_0_SPI_Recv BSP_SPI1_Recv
 
 #define CUSTOM_LSM6DSO_0_CS_PORT GPIOA
-#define CUSTOM_LSM6DSO_0_CS_PIN GPIO_PIN_0
+#define CUSTOM_LSM6DSO_0_CS_PIN GPIO_PIN_1
 
 #ifdef __cplusplus
 }
