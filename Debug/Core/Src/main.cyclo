@@ -1,6 +1,8 @@
-../Core/Src/main.c:31:5:_write	2
-../Core/Src/main.c:77:5:main	1
-../Core/Src/main.c:126:6:SystemClock_Config	3
-../Core/Src/main.c:173:13:MX_FDCAN1_Init	2
-../Core/Src/main.c:216:13:MX_GPIO_Init	1
-../Core/Src/main.c:261:6:Error_Handler	1
+../Core/Src/main.cpp:68:6:int _write(int, uint8_t*, int)	2
+../Core/Src/main.cpp:81:5:int main()	3
+../Core/Src/main.cpp:155:6:void SystemClock_Config()	3
+../Core/Src/main.cpp:202:13:void MX_CRC_Init()	2
+../Core/Src/main.cpp:233:13:void MX_FDCAN1_Init()	2
+../Core/Src/main.cpp:276:13:void MX_USART2_UART_Init()	5
+../Core/Src/main.cpp:324:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:385:6:void Error_Handler()	1

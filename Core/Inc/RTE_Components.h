@@ -25,6 +25,5 @@
 /* STMicroelectronics.X-CUBE-MEMS1.10.0.0 */
 #define BSP_MOTION_SENSORS
 #define LSM6DSO_ACCGYR_SPI
-#define GENERIC_LSM6DSO_6DORIENTATION_DEMO
 
 #endif /* __RTE_COMPONENTS_H__ */

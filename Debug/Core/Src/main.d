@@ -1,4 +1,4 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+Core/Src/main.o: ../Core/Src/main.cpp ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  ../Core/Inc/stm32g4xx_hal_conf.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
@@ -18,6 +18,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_cortex.h \
+ ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_crc.h \
+ ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_crc_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_exti.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_fdcan.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash.h \
@@ -29,11 +31,16 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_spi_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h \
- ../MEMS/Target/app_mems_int_pin_a_interface.h \
- ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo.h \
- ../Core/Inc/stm32g4xx_nucleo_conf.h \
- ../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h \
- ../MEMS/App/app_mems.h
+ ../X-CUBE-MEMS1/Target/custom_motion_sensors.h \
+ ../X-CUBE-MEMS1/Target/custom_mems_conf.h \
+ ../Core/Inc/stm32g4xx_nucleo_bus.h ../Core/Inc/stm32g4xx_nucleo_conf.h \
+ ../Core/Inc/stm32g4xx_nucleo_errno.h \
+ ../Core/Inc/stm32g4xx_nucleo_errno.h \
+ ../Drivers/BSP/Components/Common/motion_sensor.h \
+ ../Drivers/BSP/Components/lsm6dso/lsm6dso.h \
+ ../Drivers/BSP/Components/lsm6dso/lsm6dso_reg.h \
+ ../X-CUBE-MEMS1/Target/custom_motion_sensors_ex.h \
+ ../X-CUBE-MEMS1/Target/custom_motion_sensors.h
 ../Core/Inc/main.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h:
 ../Core/Inc/stm32g4xx_hal_conf.h:
@@ -54,6 +61,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma_ex.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_cortex.h:
+../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_crc.h:
+../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_crc_ex.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_exti.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_fdcan.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash.h:
@@ -65,8 +74,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_spi_ex.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h:
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h:
-../MEMS/Target/app_mems_int_pin_a_interface.h:
-../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo.h:
+../X-CUBE-MEMS1/Target/custom_motion_sensors.h:
+../X-CUBE-MEMS1/Target/custom_mems_conf.h:
+../Core/Inc/stm32g4xx_nucleo_bus.h:
 ../Core/Inc/stm32g4xx_nucleo_conf.h:
-../Drivers/BSP/STM32G4xx_Nucleo/stm32g4xx_nucleo_errno.h:
-../MEMS/App/app_mems.h:
+../Core/Inc/stm32g4xx_nucleo_errno.h:
+../Core/Inc/stm32g4xx_nucleo_errno.h:
+../Drivers/BSP/Components/Common/motion_sensor.h:
+../Drivers/BSP/Components/lsm6dso/lsm6dso.h:
+../Drivers/BSP/Components/lsm6dso/lsm6dso_reg.h:
+../X-CUBE-MEMS1/Target/custom_motion_sensors_ex.h:
+../X-CUBE-MEMS1/Target/custom_motion_sensors.h:

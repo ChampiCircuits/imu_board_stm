@@ -1,6 +1,0 @@
-../MEMS/App/app_mems.c:52:6:MX_MEMS_Init	1
-../MEMS/App/app_mems.c:74:6:MX_MEMS_Process	1
-../MEMS/App/app_mems.c:91:6:MX_LSM6DSO_6DOrientation_Init	1
-../MEMS/App/app_mems.c:118:6:BSP_PB_Callback	1
-../MEMS/App/app_mems.c:127:6:MX_LSM6DSO_6DOrientation_Process	7
-../MEMS/App/app_mems.c:176:13:Send_Orientation	43
