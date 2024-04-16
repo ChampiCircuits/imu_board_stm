@@ -1,8 +1,19 @@
-../Core/Src/main.cpp:68:6:int _write(int, uint8_t*, int)	2
-../Core/Src/main.cpp:81:5:int main()	3
-../Core/Src/main.cpp:155:6:void SystemClock_Config()	3
-../Core/Src/main.cpp:202:13:void MX_CRC_Init()	2
-../Core/Src/main.cpp:233:13:void MX_FDCAN1_Init()	2
-../Core/Src/main.cpp:276:13:void MX_USART2_UART_Init()	5
-../Core/Src/main.cpp:324:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:385:6:void Error_Handler()	1
+../Drivers/CMSIS/Include/core_cm4.h:1933:34:void __NVIC_SystemReset()	1
+../Core/Src/main.cpp:93:6:int _write(int, uint8_t*, int)	2
+../Core/Src/main.cpp:105:6:void transmit_imu_data(CUSTOM_MOTION_SENSOR_Axes_t, CUSTOM_MOTION_SENSOR_Axes_t)	3
+../Core/Src/main.cpp:151:6:void Error_Handler_CAN_ok()	2
+../Core/Src/main.cpp:171:6:void tx_ok_or_reset()	2
+../Core/Inc/ChampiCan.h:13:7:constexpr ChampiCan& ChampiCan::operator=(const ChampiCan&)	1
+../Core/Inc/ChampiState.h:19:7:constexpr ChampiState& ChampiState::operator=(const ChampiState&)	2
+../Core/Src/main.cpp:196:6:void setup()	2
+../Core/Src/main.cpp:227:6:void loop()	4
+../Core/Src/main.cpp:255:5:int main()	1
+../Core/Src/main.cpp:306:6:void SystemClock_Config()	3
+../Core/Src/main.cpp:353:13:void MX_CRC_Init()	2
+../Core/Src/main.cpp:384:13:void MX_FDCAN1_Init()	2
+../Core/Src/main.cpp:427:13:void MX_USART2_UART_Init()	5
+../Core/Src/main.cpp:475:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:536:6:void Error_Handler()	1
+../Core/Src/main.cpp:544:1:void __static_initialization_and_destruction_0(int, int)	5
+../Core/Src/main.cpp:544:1:cpp)	1
+../Core/Src/main.cpp:544:1:cpp)	1

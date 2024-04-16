@@ -51,7 +51,7 @@ void ChampiState::send_status() {
     size_t message_length = stream.bytes_written;
 
     // Send message
-    champi_can_interface_->send_msg(CAN_ID_BASE_STATUS, tx_buffer_, message_length);
+    champi_can_interface_->send_msg(CAN_ID_IMU_STATUS, tx_buffer_, message_length); // TODO make the ID configurable
 }
 
 void ChampiState::spin_once() {

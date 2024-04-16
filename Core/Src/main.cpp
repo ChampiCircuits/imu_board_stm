@@ -24,6 +24,16 @@
 #include <stdio.h>
 #include "custom_motion_sensors.h"
 #include "custom_motion_sensors_ex.h"
+
+#include "MessageRecomposer.h"
+#include "ChampiCan.h"
+
+#include "ChampiState.h"
+
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "msgs_can.pb.h"
+#include "can_ids.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +60,9 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+ChampiCan champi_can;
+ChampiState champi_state;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,6 +72,18 @@ static void MX_FDCAN1_Init(void);
 static void MX_CRC_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+
+// On le déclare ici ce buffer, car il va servir tout le temps.
+uint8_t buffer_encode_imu_data[60]; // TODO 60 c'est large
+
+CUSTOM_MOTION_SENSOR_Axes_t axes_acc;
+CUSTOM_MOTION_SENSOR_Axes_t axes_gyro;
+CUSTOM_MOTION_SENSOR_Event_Status_t imu_status;
+
+
+void Error_Handler_CAN_ok();
+void transmit_imu_data(CUSTOM_MOTION_SENSOR_Axes_t axes);
+
 
 /* USER CODE END PFP */
 
@@ -72,6 +97,155 @@ extern "C" {
 		return len;
 	}
 }
+
+/**
+ * @brief Function to send the current velocity of the robot on the CAN bus.
+ * @param vel : the current velocity of the robot
+ */
+void transmit_imu_data(CUSTOM_MOTION_SENSOR_Axes_t data_acc, CUSTOM_MOTION_SENSOR_Axes_t data_gyro) {
+
+    // Init message
+    msgs_can_ImuData imu_proto = msgs_can_ImuData_init_zero;
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer_encode_imu_data, sizeof(buffer_encode_imu_data));
+
+    // Fill message (convert mg to m/s^2 and mdps to rad/s)
+    imu_proto.acc_x = (float)(data_acc.x * 9.81 / 1000.);
+    imu_proto.acc_y = (float)(data_acc.y * 9.81 / 1000.);
+    imu_proto.acc_z = (float)(data_acc.z * 9.81 / 1000.);
+    imu_proto.gyro_x = (float)(data_gyro.x * 0.01745329251 / 1000.);
+    imu_proto.gyro_y = (float)(data_gyro.y * 0.01745329251 / 1000.);
+    imu_proto.gyro_z = (float)(data_gyro.z * 0.01745329251 / 1000.);
+
+    // Fill has.. fields
+    imu_proto.has_acc_x = true;
+    imu_proto.has_acc_y = true;
+    imu_proto.has_acc_z = true;
+    imu_proto.has_gyro_x = true;
+    imu_proto.has_gyro_y = true;
+    imu_proto.has_gyro_z = true;
+
+
+    // Encode message
+    bool status = pb_encode(&stream, msgs_can_ImuData_fields, &imu_proto);
+    size_t message_length = stream.bytes_written;
+
+    // Check for errors
+    if (!status) {
+        // TODO on peut récupérer un message d'erreur avec PB_GET_ERROR(&stream))
+        champi_state.report_status(msgs_can_Status_StatusType_ERROR, msgs_can_Status_ErrorType_PROTO_ENCODE);
+        Error_Handler_CAN_ok();
+    }
+
+    // Send
+    if (champi_can.send_msg(CAN_ID_IMU_DATA, (uint8_t *) buffer_encode_imu_data, message_length) != 0) {
+        /* Transmission request Error */
+        champi_state.report_status(msgs_can_Status_StatusType_ERROR, msgs_can_Status_ErrorType_CAN_TX);
+        Error_Handler_CAN_ok();
+    }
+}
+
+/**
+ * @brief Error handler we call when CAN might still work.
+ * It blinks the built-in LED at 1Hz AND sends status on CAN bus.
+ */
+void Error_Handler_CAN_ok() {
+
+    // Blink the built-in LED at 1Hz
+    uint32_t last_time = HAL_GetTick();
+    while (true) {
+        champi_state.spin_once();
+        HAL_Delay(10); // 10ms required to match the main loop frequency (for control)
+
+        if (HAL_GetTick() - last_time > 500) {
+            last_time = HAL_GetTick();
+            HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        }
+    }
+}
+
+/**
+ * @brief Fonction qui attend que le l'envoi de données sur le CAN fonctionne. Ca envoie un message de test
+ * à répétition jusqu'à ce que ça fonctionne.
+ * Also blinks the built-in LED at 5 Hz.
+ */
+void tx_ok_or_reset() {
+    uint8_t buff[20] = {0}; // We need a big message to fill the FIFO
+
+    // Send a message to test if the can bus works (at least 1 node up)
+    uint32_t ret = champi_can.send_msg(CAN_ID_IMU_TEST, (uint8_t *) buff, 20);
+
+    if(ret==0){
+        return;
+    }
+
+    // If we get an error, retry doesn't work sometimes. So we reset the stm to try again. Also blink the led 10Hz
+
+    // blink the built-in LED for 1s
+    for (int i = 0; i < 10; i++) {
+        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        HAL_Delay(100);
+    }
+
+    // Then reset the stm
+    NVIC_SystemReset();
+
+}
+
+
+
+void setup() {
+
+    champi_can = ChampiCan(&hfdcan1);
+
+
+    if (champi_can.start() != 0) {
+        // TODO: On a jamais rencontré cette erreur.
+        Error_Handler();
+    }
+
+    // This is required: when the Raspberry Pi starts up, transmit CAN frames returns error.
+    tx_ok_or_reset();
+
+    // Initialize the IMU
+    (void) CUSTOM_MOTION_SENSOR_Init(CUSTOM_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
+    (void) CUSTOM_MOTION_SENSOR_Enable_6D_Orientation(CUSTOM_LSM6DSO_0, CUSTOM_MOTION_SENSOR_INT1_PIN);
+
+    champi_state = ChampiState(&champi_can, 500);
+
+    champi_state.report_status(msgs_can_Status_StatusType_INIT, msgs_can_Status_ErrorType_NONE);
+
+    // Switch led ON to indicate that we're running
+    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+
+    champi_state.report_status(msgs_can_Status_StatusType_OK, msgs_can_Status_ErrorType_NONE);
+
+}
+
+/**
+ * @brief Main loop.
+ */
+void loop() {
+    if (CUSTOM_MOTION_SENSOR_Get_Event_Status(CUSTOM_LSM6DSO_0, &imu_status) != BSP_ERROR_NONE) {
+        Error_Handler();
+    }
+
+
+    if (CUSTOM_MOTION_SENSOR_GetAxes(CUSTOM_LSM6DSO_0, MOTION_ACCELERO, &axes_acc) != BSP_ERROR_NONE) {
+        Error_Handler();
+    }
+
+    if (CUSTOM_MOTION_SENSOR_GetAxes(CUSTOM_LSM6DSO_0, MOTION_GYRO, &axes_gyro) != BSP_ERROR_NONE) {
+        Error_Handler();
+    }
+
+    transmit_imu_data(axes_acc, axes_gyro);
+
+    champi_state.spin_once();
+
+    HAL_Delay(10); // 10ms required to match the main loop frequency (for control)
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -108,40 +282,17 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-    printf("Hello!\n");
-
-    /* Set EXTI settings for Interrupt A */
-//    set_mems_int_pin_a_exti();
-//
-//    /* Initialize Virtual COM Port */
-//    BSP_COM_Init(COM1);
-
-    (void) CUSTOM_MOTION_SENSOR_Init(CUSTOM_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
-
-    (void) CUSTOM_MOTION_SENSOR_Enable_6D_Orientation(CUSTOM_LSM6DSO_0, CUSTOM_MOTION_SENSOR_INT1_PIN);
+    setup();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-    CUSTOM_MOTION_SENSOR_Event_Status_t status;
 
     while (1) {
-        if (CUSTOM_MOTION_SENSOR_Get_Event_Status(CUSTOM_LSM6DSO_0, &status) != BSP_ERROR_NONE) {
-            Error_Handler();
-        }
-
-
-        CUSTOM_MOTION_SENSOR_Axes_t axes;
-        if (CUSTOM_MOTION_SENSOR_GetAxes(CUSTOM_LSM6DSO_0, MOTION_GYRO, &axes) != BSP_ERROR_NONE) {
-            Error_Handler();
-        }
-
-        // Print the data
-        printf("X: %d\t, Y: %d\t, Z: %d\n", axes.x, axes.y, axes.z);
-
-        HAL_Delay(10);
-    /* USER CODE END WHILE */
+        loop();
+        HAL_Delay(10); // TODO handle freq correctly
+        /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
     }
