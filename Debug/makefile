@@ -87,7 +87,7 @@ main-build: IMU_board.elf secondary-outputs
 
 # Tool invocations
 IMU_board.elf IMU_board.map: $(OBJS) $(USER_OBJS) /home/arusso/STM32CubeIDE/workspace_1.15.0/IMU_board/STM32G431KBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "IMU_board.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/arusso/STM32CubeIDE/workspace_1.15.0/IMU_board/STM32G431KBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="IMU_board.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "IMU_board.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/arusso/STM32CubeIDE/workspace_1.15.0/IMU_board/STM32G431KBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="IMU_board.map" -Wl,--gc-sections -static -L../Middlewares/ST/STM32_MotionAC_Library/Lib --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

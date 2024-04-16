@@ -34,6 +34,8 @@
 #include <pb_decode.h>
 #include "msgs_can.pb.h"
 #include "can_ids.hpp"
+
+#include "motion_ac.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +64,8 @@ UART_HandleTypeDef huart2;
 
 ChampiCan champi_can;
 ChampiState champi_state;
+
+float acc_cal_x, acc_cal_y, acc_cal_z; // for calibration only
 
 /* USER CODE END PV */
 
@@ -246,6 +250,69 @@ void loop() {
 }
 
 
+void setup_calibration() {
+    // Initialize the IMU
+    (void) CUSTOM_MOTION_SENSOR_Init(CUSTOM_LSM6DSO_0, MOTION_ACCELERO | MOTION_GYRO);
+    (void) CUSTOM_MOTION_SENSOR_Enable_6D_Orientation(CUSTOM_LSM6DSO_0, CUSTOM_MOTION_SENSOR_INT1_PIN);
+
+    /*** Initialization ***/
+    MAC_knobs_t Knobs;
+/* Accelerometer calibration API initialization function */
+    MotionAC_Initialize(1);
+    MotionAC_GetKnobs(&Knobs);
+    Knobs.Sample_ms = 10;
+    (void)MotionAC_SetKnobs(&Knobs);
+}
+
+void loop_calibration() {
+
+    static MAC_cal_quality_t cal_quality = MAC_CALQSTATUSUNKNOWN;
+
+    MAC_input_t data_in;
+    MAC_output_t data_out;
+
+    if (CUSTOM_MOTION_SENSOR_GetAxes(CUSTOM_LSM6DSO_0, MOTION_ACCELERO, &axes_acc) != BSP_ERROR_NONE) {
+        Error_Handler();
+    }
+
+    // Fill the input structure (convert mg to g)
+    data_in.Acc[0] = (float)(axes_acc.x / 1000.);
+    data_in.Acc[1] = (float)(axes_acc.y / 1000.);
+    data_in.Acc[2] = (float)(axes_acc.z / 1000.);
+    data_in.TimeStamp = HAL_GetTick();
+
+    /* Accelerometer calibration algorithm update */
+    uint8_t is_calibrated;
+    MotionAC_Update(&data_in, &is_calibrated);
+
+    /* Get Calibration coeficients */
+    MotionAC_GetCalParams(&data_out);
+
+    if(data_out.CalQuality != cal_quality) {
+        cal_quality = data_out.CalQuality;
+        printf("Calibration quality: %d\n", cal_quality);
+        // print calibration matrix
+        printf("Calibration matrix:\n");
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                printf("%f ", data_out.SF_Matrix[i][j]);
+            }
+            printf("\n");
+        }
+        // print bias
+        printf("Bias:\n");
+        for(int i = 0; i < 3; i++) {
+            printf("%f ", data_out.AccBias[i]);
+        }
+    }
+
+    /* Apply correction */
+    acc_cal_x = (data_in.Acc[0] - data_out.AccBias[0])* data_out.SF_Matrix[0][0];
+    acc_cal_y = (data_in.Acc[1] - data_out.AccBias[1])* data_out.SF_Matrix[1][1];
+    acc_cal_z = (data_in.Acc[2] - data_out.AccBias[2])* data_out.SF_Matrix[2][2];
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -282,17 +349,22 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-    setup();
-
+//    setup();
+setup_calibration();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+  unsigned int last_time = HAL_GetTick();
+
     while (1) {
-        loop();
-        HAL_Delay(10); // TODO handle freq correctly
-        /* USER CODE END WHILE */
+        if(HAL_GetTick() - last_time > 10) {
+            last_time = HAL_GetTick();
+            // loop();
+            loop_calibration();
+        }
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
     }

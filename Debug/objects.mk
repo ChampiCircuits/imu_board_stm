@@ -5,5 +5,5 @@
 
 USER_OBJS :=
 
-LIBS :=
+LIBS := -l:MotionAC_CM4F_wc32_ot_hard.a
 
