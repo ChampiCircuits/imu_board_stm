@@ -60,7 +60,7 @@ int ChampiCan::send_frame(uint32_t id, uint8_t *frame_data, uint32_t size) {
     // Je mets un timeout de 50ms. C'est petit exprès pour voir si on a encore des problèmes après.
     uint32_t ret = HAL_FDCAN_GetTxFifoFreeLevel(handle_fdcan_);
     uint32_t start_waiting = HAL_GetTick();
-    while (start_waiting + 50 > HAL_GetTick() && ret == 0) {
+    while (start_waiting + 200 > HAL_GetTick() && ret == 0) {
         ret = HAL_FDCAN_GetTxFifoFreeLevel(handle_fdcan_);
     }
 
@@ -88,6 +88,9 @@ int ChampiCan::send_msg(uint32_t id, uint8_t *msg, uint32_t msg_size) {
 		int num_bytes_frame = 6;
 		if(i==nb_frames-1) {
 			num_bytes_frame = msg_size % 6;
+            if(num_bytes_frame == 0) {
+                num_bytes_frame = 6;
+            }
 		}
 
 		// Data

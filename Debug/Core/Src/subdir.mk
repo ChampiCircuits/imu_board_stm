@@ -7,10 +7,10 @@
 CPP_SRCS += \
 ../Core/Src/ChampiCan.cpp \
 ../Core/Src/ChampiState.cpp \
-../Core/Src/MessageRecomposer.cpp 
+../Core/Src/MessageRecomposer.cpp \
+../Core/Src/main.cpp 
 
 C_SRCS += \
-../Core/Src/main.c \
 ../Core/Src/msgs_can.pb.c \
 ../Core/Src/pb_common.c \
 ../Core/Src/pb_decode.c \
@@ -23,7 +23,6 @@ C_SRCS += \
 ../Core/Src/system_stm32g4xx.c 
 
 C_DEPS += \
-./Core/Src/main.d \
 ./Core/Src/msgs_can.pb.d \
 ./Core/Src/pb_common.d \
 ./Core/Src/pb_decode.d \
@@ -54,7 +53,8 @@ OBJS += \
 CPP_DEPS += \
 ./Core/Src/ChampiCan.d \
 ./Core/Src/ChampiState.d \
-./Core/Src/MessageRecomposer.d 
+./Core/Src/MessageRecomposer.d \
+./Core/Src/main.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
